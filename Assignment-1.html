@@ -385,8 +385,8 @@ library(tidyverse)</code></pre>
 <pre class="r"><code>area_vars_2018 &lt;- load_variables(2018, &quot;acs1&quot;)</code></pre>
 <pre class="r"><code>area_vars_2010 &lt;- load_variables(2010, &quot;sf1&quot;)</code></pre>
 </div>
-<div id="exploring-relationships-between-internet-access-and-household-characteristics" class="section level1">
-<h1>Exploring relationships between internet access and household characteristics</h1>
+<div id="exploring-relationships-between-internet-access-and-household-characteristics-in-maine" class="section level1">
+<h1>Exploring relationships between internet access and household characteristics in Maine</h1>
 <div id="selecting-variables-and-defining-population" class="section level3">
 <h3>Selecting variables and defining population</h3>
 <p>Individuals who lack internet access face a wide spectrum of limited opportunities for economic and social connections in today’s society, poignantly emphasized by the COVID-19 pandemic.</p>
@@ -396,7 +396,7 @@ library(tidyverse)</code></pre>
 </div>
 <div id="loading-displaying-and-saving-selected-variables" class="section level3">
 <h3>Loading, displaying, and saving selected variables</h3>
-<pre class="r"><code>hh_data_me &lt;- get_pums(variables = c(&quot;ACCESS&quot;,
+<pre class="r"><code>household_data_me &lt;- get_pums(variables = c(&quot;ACCESS&quot;,
                                   &quot;HHLANP&quot;, 
                                   &quot;HINCP&quot;,
                                   &quot;NRC&quot;, 
@@ -409,7 +409,7 @@ library(tidyverse)</code></pre>
    filter(TEN_label != &quot;N/A (GQ/vacant)&quot;) %&gt;%
 select(ACCESS_label, HHLANP_label, HINCP, NRC, NP)</code></pre>
 <pre><code>## Getting data from the 2018 1-year ACS Public Use Microdata Sample</code></pre>
-<pre class="r"><code>hh_data_me</code></pre>
+<pre class="r"><code>household_data_me</code></pre>
 <pre><code>## # A tibble: 12,506 x 5
 ##    ACCESS_label                             HHLANP_label       HINCP   NRC    NP
 ##    &lt;chr&gt;                                    &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
@@ -424,7 +424,7 @@ select(ACCESS_label, HHLANP_label, HINCP, NRC, NP)</code></pre>
 ##  9 Yes, by paying a cell phone company or ~ English only hou~   8000     0     3
 ## 10 Yes, by paying a cell phone company or ~ English only hou~   8000     0     3
 ## # ... with 12,496 more rows</code></pre>
-<pre class="r"><code>write_csv(hh_data_me, &quot;hh_data_me.csv&quot;)</code></pre>
+<pre class="r"><code>write_csv(household_data_me, &quot;household_data_me.csv&quot;)</code></pre>
 </div>
 </div>
 

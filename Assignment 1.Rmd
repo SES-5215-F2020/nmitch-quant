@@ -35,7 +35,7 @@ area_vars_2018 <- load_variables(2018, "acs1")
 area_vars_2010 <- load_variables(2010, "sf1")
 ```
 
-# Exploring relationships between internet access and household characteristics
+# Exploring relationships between internet access and household characteristics in Maine
 
 ### Selecting variables and defining population
 Individuals who lack internet access face a wide spectrum of limited opportunities for economic and social connections in today's society, poignantly emphasized by the COVID-19 pandemic. 
@@ -49,7 +49,7 @@ My analysis will consider 12,506 observations. The categorical variables I consi
 ### Loading, displaying, and saving selected variables
 
 ```{r results='hide'}
-hh_data_me <- get_pums(variables = c("ACCESS",
+household_data_me <- get_pums(variables = c("ACCESS",
                                   "HHLANP", 
                                   "HINCP",
                                   "NRC", 
@@ -64,10 +64,10 @@ select(ACCESS_label, HHLANP_label, HINCP, NRC, NP)
 ```
 
 ```{r show loaded microdata variables, message=FALSE}
-hh_data_me
+household_data_me
 ```
 
 ```{r save data}
-write_csv(hh_data_me, "hh_data_me.csv")
+write_csv(household_data_me, "household_data_me.csv")
 ```
 
