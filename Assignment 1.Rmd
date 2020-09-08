@@ -4,16 +4,65 @@ author: "Nickie Mitch"
 date: "9/4/2020"
 output: html_document
 ---
-# Level 1 title 
+# Diving Into R and Preparing Data
 
-Here is some text! 
+While I do have some experience in data analysis, R - and coding more broadly - is an entirely new world for me. This assignment represented my first experience in using R to access and prepare data, and then create a deliverable. Per the assignment instructions, I loaded the Tidyverse and developmental Tidycensus libraries, then accessed person-,household-, and area-level data from the 2018 American Community Survey as well as area-level data from the 2010 census.
 
-## Level 2 title
-
-More Text
-
-```{r}
-2 + 6
+```{r load libraries, message=FALSE}
+library(tidycensus)
+library(tidyverse)
 ```
 
-That was the answer!
+```{r load person-level microdata variables}
+person_vars_2018 <- pums_variables %>%
+  distinct(year, survey, var_code, 
+           var_label, data_type, level) %>%
+  filter(level == "person", year == 2018, survey == "acs1")
+```
+
+```{r load household-level microdata variables}
+hh_vars_2018 <- pums_variables %>%
+  distinct(year, survey, var_code, 
+           var_label, data_type, level) %>%
+  filter(level == "housing", year == 2018, survey == "acs1")
+```
+
+```{r load area-level ACS microdata variables}
+area_vars_2018 <- load_variables(2018, "acs1")
+```
+
+```{r load area-level census microdata variables}
+area_vars_2010 <- load_variables(2010, "sf1")
+```
+
+# Exploring relationships between internet access and household characteristics
+
+Individuals who lack internet access face a wide spectrum of limited opportunities for economic and social connections in today's society, poignantly emphasized by the COVID-19 pandemic. 
+
+Because residential internet is provided and billed by the dwelling unit, household-level data provides the best context for analysis. I'm interested in exploring the characteristics of households who lack internet access, seeking to develop understandings upon which further explorations of barriers to internet access can be based. I choose to limit my analysis to Maine, both because it is a state with which I am familiar and because the rural nature of much of the state adds an intriguing layer to my analysis.
+
+
+## Loading selected Variables
+
+```{r load selected microdata variables, message=FALSE}
+hh_data_me <- get_pums(variables = c("ACCESS",
+                                  "HHLANP", 
+                                  "HINCP",
+                                  "TEN",
+                                  "RMSP", 
+                                  "NP"),
+                        state = "ME", 
+                        year = 2018, 
+                        survey = "acs1",
+                        recode = TRUE) %>%
+   filter(TEN_label != "N/A (GQ/vacant)") %>%
+select(ACCESS_label, HHLANP_label, HINCP, RMSP, NP)
+```
+```{r show loaded microdata variables, message=FALSE}
+hh_data_me
+```
+
+```{r save data, message=FALSE}
+write_csv(hh_data_me, "hh_data_me.csv")
+```
+
