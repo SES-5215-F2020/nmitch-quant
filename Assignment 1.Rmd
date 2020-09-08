@@ -6,7 +6,9 @@ output: html_document
 ---
 # Diving into R and preparing data
 
-While I do have some experience in data analysis, R - and coding more broadly - is an entirely new world for me. This assignment is my first experience using R to access and prepare data, and then to create a deliverable. Per the assignment instructions, I loaded the Tidyverse and developmental Tidycensus libraries, then accessed person-,household-, and area-level data from the 2018 American Community Survey as well as area-level data from the 2010 census.
+While I do have some experience in data analysis, R - and coding more broadly - is an entirely new world for me. This assignment is my first experience using R to access and prepare data, and then to create a deliverable. 
+
+Per the assignment instructions, I loaded the Tidyverse and developmental Tidycensus libraries, then accessed person-level, household-level, and area-level data from the 2018 American Community Survey as well as area-level data from the 2010 census.
 
 ```{r load libraries, message=FALSE}
 library(tidycensus)
@@ -38,11 +40,9 @@ area_vars_2010 <- load_variables(2010, "sf1")
 # Exploring relationships between internet access and household characteristics in Maine
 
 ### Selecting variables and defining population
-Individuals who lack internet access face a wide spectrum of limited opportunities for economic and social connections in today's society, poignantly emphasized by the COVID-19 pandemic. 
+Individuals who lack internet access face a wide spectrum of limited opportunities for economic and social connections in today's society. I choose to limit my analysis to Maine because it is a state in which internet access is a particularly pressing concern in rural and remote communities. Because residential internet is provided and billed by the housing unit, household-level is the best unit of analysis. 
 
-I choose to limit my analysis to Maine because it is a state in which internet access is a particularly pressing concern in rural and remote communities. Because residential internet is provided and billed by the housing unit, household-level data provides the best context for analysis. 
-
-I consider all households in Maine, exploring characteristics of them in the context of whether or not they have internet access. I hope my analysis will develop understandings upon which further explorations of barriers to internet access can be based in future studies. My analysis considers 12,506 observations. 
+The population my study considers is comprised of all households in Maine (12,506 observations). I consider characteristics of them in the context of whether or not they have internet access. I hope my analysis will develop understandings upon which further explorations of barriers to internet access can be based in future studies. 
 
 The categorical variables I consider are access to the internet (ACCESS) and detailed household language (HHLANP). 
 
