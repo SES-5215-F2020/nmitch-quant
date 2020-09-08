@@ -1,10 +1,10 @@
 ---
 title: "Assignment 1"
 author: "Nickie Mitch"
-date: "9/4/2020"
+date: "9/8/2020"
 output: html_document
 ---
-# Diving Into R and Preparing Data
+# Diving into R and preparing data
 
 While I do have some experience in data analysis, R - and coding more broadly - is an entirely new world for me. This assignment is my first experience using R to access and prepare data, and then to create a deliverable. Per the assignment instructions, I loaded the Tidyverse and developmental Tidycensus libraries, then accessed person-,household-, and area-level data from the 2018 American Community Survey as well as area-level data from the 2010 census.
 
@@ -37,19 +37,20 @@ area_vars_2010 <- load_variables(2010, "sf1")
 
 # Exploring relationships between internet access and household characteristics
 
+### Selecting variables and defining population
 Individuals who lack internet access face a wide spectrum of limited opportunities for economic and social connections in today's society, poignantly emphasized by the COVID-19 pandemic. 
 
 Because residential internet is provided and billed by the housing unit, household-level data provides the best context for analysis. I choose to limit my analysis to Maine because it is a state in which internet access is a particularly pressing concern in rural and remote communities. 
 
-I will explore characteristics of households and their respective housing units in the context of whether or not they have internet access, seeking to develop understandings upon which further explorations of barriers to internet access could be based in future studies. My analysis will consider 12,506 observations. The categorical variables I consider are access to the internet (ACCESS) and detailed household language (HHLANP). The continuous variables I consider are household income over the past 12 months using ADJINC to adjust to constant dollars (HINCP), yearly food stamp/Supplemental Nutrition Assistance Program recipiency (FS), and number of persons in this household (NP). I use tenure (TEN) to filter out vacant housing units. 
+I will explore characteristics of households and their respective housing units in the context of whether or not they have internet access, seeking to develop understandings upon which further explorations of barriers to internet access could be based in future studies. My analysis will consider 12,506 observations. The categorical variables I consider are access to the internet (ACCESS) and detailed household language (HHLANP). The continuous variables I consider are household income over the past 12 months using ADJINC to adjust to constant dollars (HINCP), number of related children in this household (NRC), and number of persons in this household (NP). I use tenure (TEN) to filter out vacant housing units. 
 
-## Loading, displaying, and saving selected Variables
+### Loading, displaying, and saving selected variables
 
 ```{r load selected microdata variables}
 hh_data_me <- get_pums(variables = c("ACCESS",
                                   "HHLANP", 
                                   "HINCP",
-                                  "FS", 
+                                  "NRC", 
                                   "NP",
                                   "TEN"),
                         state = "ME", 
@@ -57,7 +58,7 @@ hh_data_me <- get_pums(variables = c("ACCESS",
                         survey = "acs1",
                         recode = TRUE) %>%
    filter(TEN_label != "N/A (GQ/vacant)") %>%
-select(ACCESS_label, HHLANP_label, HINCP, FS, NP)
+select(ACCESS_label, HHLANP_label, HINCP, NRC, NP)
 ```
 
 ```{r show loaded microdata variables, message=FALSE}

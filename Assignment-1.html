@@ -364,13 +364,13 @@ summary {
 
 <h1 class="title toc-ignore">Assignment 1</h1>
 <h4 class="author">Nickie Mitch</h4>
-<h4 class="date">9/4/2020</h4>
+<h4 class="date">9/8/2020</h4>
 
 </div>
 
 
 <div id="diving-into-r-and-preparing-data" class="section level1">
-<h1>Diving Into R and Preparing Data</h1>
+<h1>Diving into R and preparing data</h1>
 <p>While I do have some experience in data analysis, R - and coding more broadly - is an entirely new world for me. This assignment is my first experience using R to access and prepare data, and then to create a deliverable. Per the assignment instructions, I loaded the Tidyverse and developmental Tidycensus libraries, then accessed person-,household-, and area-level data from the 2018 American Community Survey as well as area-level data from the 2010 census.</p>
 <pre class="r"><code>library(tidycensus)
 library(tidyverse)</code></pre>
@@ -387,15 +387,18 @@ library(tidyverse)</code></pre>
 </div>
 <div id="exploring-relationships-between-internet-access-and-household-characteristics" class="section level1">
 <h1>Exploring relationships between internet access and household characteristics</h1>
+<div id="selecting-variables-and-defining-population" class="section level3">
+<h3>Selecting variables and defining population</h3>
 <p>Individuals who lack internet access face a wide spectrum of limited opportunities for economic and social connections in today’s society, poignantly emphasized by the COVID-19 pandemic.</p>
 <p>Because residential internet is provided and billed by the housing unit, household-level data provides the best context for analysis. I choose to limit my analysis to Maine because it is a state in which internet access is a particularly pressing concern in rural and remote communities.</p>
-<p>I will explore characteristics of households and their respective housing units in the context of whether or not they have internet access, seeking to develop understandings upon which further explorations of barriers to internet access could be based in future studies. My analysis will consider 12,506 observations. The categorical variables I consider are access to the internet (ACCESS) and detailed household language (HHLANP). The continuous variables I consider are household income over the past 12 months using ADJINC to adjust to constant dollars (HINCP), yearly food stamp/Supplemental Nutrition Assistance Program recipiency (FS), and number of persons in this household (NP). I use tenure (TEN) to filter out vacant housing units.</p>
-<div id="loading-displaying-and-saving-selected-variables" class="section level2">
-<h2>Loading, displaying, and saving selected Variables</h2>
+<p>I will explore characteristics of households and their respective housing units in the context of whether or not they have internet access, seeking to develop understandings upon which further explorations of barriers to internet access could be based in future studies. My analysis will consider 12,506 observations. The categorical variables I consider are access to the internet (ACCESS) and detailed household language (HHLANP). The continuous variables I consider are household income over the past 12 months using ADJINC to adjust to constant dollars (HINCP), number of related children in this household (NRC), and number of persons in this household (NP). I use tenure (TEN) to filter out vacant housing units.</p>
+</div>
+<div id="loading-displaying-and-saving-selected-variables" class="section level3">
+<h3>Loading, displaying, and saving selected variables</h3>
 <pre class="r"><code>hh_data_me &lt;- get_pums(variables = c(&quot;ACCESS&quot;,
                                   &quot;HHLANP&quot;, 
                                   &quot;HINCP&quot;,
-                                  &quot;FS&quot;, 
+                                  &quot;NRC&quot;, 
                                   &quot;NP&quot;,
                                   &quot;TEN&quot;),
                         state = &quot;ME&quot;, 
@@ -403,7 +406,7 @@ library(tidyverse)</code></pre>
                         survey = &quot;acs1&quot;,
                         recode = TRUE) %&gt;%
    filter(TEN_label != &quot;N/A (GQ/vacant)&quot;) %&gt;%
-select(ACCESS_label, HHLANP_label, HINCP, FS, NP)</code></pre>
+select(ACCESS_label, HHLANP_label, HINCP, NRC, NP)</code></pre>
 <pre><code>## Getting data from the 2018 1-year ACS Public Use Microdata Sample</code></pre>
 <pre><code>## 
 Downloading: 8.6 kB     
@@ -414,22 +417,18 @@ Downloading: 8.6 kB
 Downloading: 8.6 kB     
 Downloading: 8.6 kB     
 Downloading: 8.6 kB     
+Downloading: 8.6 kB     
+Downloading: 8.6 kB     
 Downloading: 18 kB     
 Downloading: 18 kB     
-Downloading: 18 kB     
-Downloading: 18 kB     
-Downloading: 30 kB     
-Downloading: 30 kB     
-Downloading: 30 kB     
-Downloading: 30 kB     
-Downloading: 30 kB     
-Downloading: 30 kB     
-Downloading: 30 kB     
-Downloading: 30 kB     
-Downloading: 45 kB     
-Downloading: 45 kB     
-Downloading: 45 kB     
-Downloading: 45 kB     
+Downloading: 27 kB     
+Downloading: 27 kB     
+Downloading: 27 kB     
+Downloading: 27 kB     
+Downloading: 27 kB     
+Downloading: 27 kB     
+Downloading: 36 kB     
+Downloading: 36 kB     
 Downloading: 45 kB     
 Downloading: 45 kB     
 Downloading: 45 kB     
@@ -440,50 +439,60 @@ Downloading: 45 kB
 Downloading: 45 kB     
 Downloading: 54 kB     
 Downloading: 54 kB     
-Downloading: 63 kB     
-Downloading: 63 kB     
-Downloading: 63 kB     
-Downloading: 63 kB     
-Downloading: 63 kB     
-Downloading: 63 kB     
-Downloading: 63 kB     
-Downloading: 63 kB     
-Downloading: 63 kB     
-Downloading: 63 kB     
+Downloading: 54 kB     
+Downloading: 54 kB     
+Downloading: 54 kB     
+Downloading: 54 kB     
+Downloading: 54 kB     
+Downloading: 54 kB     
+Downloading: 54 kB     
+Downloading: 54 kB     
 Downloading: 63 kB     
 Downloading: 63 kB     
 Downloading: 72 kB     
 Downloading: 72 kB     
-Downloading: 81 kB     
-Downloading: 81 kB     
-Downloading: 81 kB     
-Downloading: 81 kB     
+Downloading: 72 kB     
+Downloading: 72 kB     
+Downloading: 72 kB     
+Downloading: 72 kB     
+Downloading: 72 kB     
+Downloading: 72 kB     
 Downloading: 81 kB     
 Downloading: 81 kB     
 Downloading: 90 kB     
 Downloading: 90 kB     
 Downloading: 90 kB     
 Downloading: 90 kB     
-Downloading: 99 kB     
-Downloading: 99 kB     
-Downloading: 99 kB     
-Downloading: 99 kB     
-Downloading: 99 kB     
-Downloading: 99 kB     
-Downloading: 99 kB     
-Downloading: 99 kB     
-Downloading: 99 kB     
-Downloading: 99 kB     
+Downloading: 90 kB     
+Downloading: 90 kB     
+Downloading: 90 kB     
+Downloading: 90 kB     
+Downloading: 90 kB     
+Downloading: 90 kB     
+Downloading: 90 kB     
+Downloading: 90 kB     
 Downloading: 99 kB     
 Downloading: 99 kB     
 Downloading: 110 kB     
 Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
+Downloading: 110 kB     
 Downloading: 120 kB     
 Downloading: 120 kB     
-Downloading: 120 kB     
-Downloading: 120 kB     
-Downloading: 120 kB     
-Downloading: 120 kB     
+Downloading: 130 kB     
+Downloading: 130 kB     
+Downloading: 130 kB     
+Downloading: 130 kB     
 Downloading: 130 kB     
 Downloading: 130 kB     
 Downloading: 130 kB     
@@ -494,8 +503,18 @@ Downloading: 130 kB
 Downloading: 130 kB     
 Downloading: 140 kB     
 Downloading: 140 kB     
-Downloading: 150 kB     
-Downloading: 150 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
+Downloading: 140 kB     
 Downloading: 150 kB     
 Downloading: 150 kB     
 Downloading: 150 kB     
@@ -512,10 +531,6 @@ Downloading: 170 kB
 Downloading: 170 kB     
 Downloading: 170 kB     
 Downloading: 170 kB     
-Downloading: 170 kB     
-Downloading: 170 kB     
-Downloading: 170 kB     
-Downloading: 170 kB     
 Downloading: 180 kB     
 Downloading: 180 kB     
 Downloading: 180 kB     
@@ -526,22 +541,14 @@ Downloading: 180 kB
 Downloading: 180 kB     
 Downloading: 180 kB     
 Downloading: 180 kB     
-Downloading: 180 kB     
-Downloading: 180 kB     
 Downloading: 200 kB     
 Downloading: 200 kB     
 Downloading: 200 kB     
 Downloading: 200 kB     
 Downloading: 200 kB     
 Downloading: 200 kB     
-Downloading: 200 kB     
-Downloading: 200 kB     
-Downloading: 200 kB     
-Downloading: 200 kB     
-Downloading: 200 kB     
-Downloading: 200 kB     
-Downloading: 200 kB     
-Downloading: 200 kB     
+Downloading: 210 kB     
+Downloading: 210 kB     
 Downloading: 210 kB     
 Downloading: 210 kB     
 Downloading: 210 kB     
@@ -556,12 +563,10 @@ Downloading: 230 kB
 Downloading: 230 kB     
 Downloading: 230 kB     
 Downloading: 230 kB     
-Downloading: 240 kB     
-Downloading: 240 kB     
-Downloading: 240 kB     
-Downloading: 240 kB     
-Downloading: 240 kB     
-Downloading: 240 kB     
+Downloading: 230 kB     
+Downloading: 230 kB     
+Downloading: 230 kB     
+Downloading: 230 kB     
 Downloading: 240 kB     
 Downloading: 240 kB     
 Downloading: 240 kB     
@@ -592,8 +597,6 @@ Downloading: 280 kB
 Downloading: 280 kB     
 Downloading: 280 kB     
 Downloading: 280 kB     
-Downloading: 280 kB     
-Downloading: 280 kB     
 Downloading: 290 kB     
 Downloading: 290 kB     
 Downloading: 290 kB     
@@ -602,12 +605,10 @@ Downloading: 290 kB
 Downloading: 290 kB     
 Downloading: 290 kB     
 Downloading: 290 kB     
-Downloading: 290 kB     
-Downloading: 290 kB     
-Downloading: 290 kB     
-Downloading: 290 kB     
-Downloading: 290 kB     
-Downloading: 290 kB     
+Downloading: 310 kB     
+Downloading: 310 kB     
+Downloading: 310 kB     
+Downloading: 310 kB     
 Downloading: 310 kB     
 Downloading: 310 kB     
 Downloading: 310 kB     
@@ -628,10 +629,6 @@ Downloading: 330 kB
 Downloading: 330 kB     
 Downloading: 330 kB     
 Downloading: 330 kB     
-Downloading: 330 kB     
-Downloading: 330 kB     
-Downloading: 340 kB     
-Downloading: 340 kB     
 Downloading: 340 kB     
 Downloading: 340 kB     
 Downloading: 340 kB     
@@ -646,10 +643,12 @@ Downloading: 340 kB
 Downloading: 340 kB     
 Downloading: 360 kB     
 Downloading: 360 kB     
-Downloading: 370 kB     
-Downloading: 370 kB     
-Downloading: 370 kB     
-Downloading: 370 kB     
+Downloading: 360 kB     
+Downloading: 360 kB     
+Downloading: 360 kB     
+Downloading: 360 kB     
+Downloading: 360 kB     
+Downloading: 360 kB     
 Downloading: 370 kB     
 Downloading: 370 kB     
 Downloading: 370 kB     
@@ -668,36 +667,32 @@ Downloading: 380 kB
 Downloading: 380 kB     
 Downloading: 380 kB     
 Downloading: 380 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 390 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
-Downloading: 410 kB     
+Downloading: 380 kB     
+Downloading: 380 kB     
+Downloading: 380 kB     
+Downloading: 380 kB     
+Downloading: 380 kB     
+Downloading: 380 kB     
+Downloading: 380 kB     
+Downloading: 380 kB     
+Downloading: 380 kB     
+Downloading: 380 kB     
+Downloading: 400 kB     
+Downloading: 400 kB     
+Downloading: 400 kB     
+Downloading: 400 kB     
+Downloading: 400 kB     
+Downloading: 400 kB     
+Downloading: 400 kB     
+Downloading: 400 kB     
+Downloading: 420 kB     
+Downloading: 420 kB     
+Downloading: 420 kB     
+Downloading: 420 kB     
+Downloading: 420 kB     
+Downloading: 420 kB     
+Downloading: 420 kB     
+Downloading: 420 kB     
 Downloading: 430 kB     
 Downloading: 430 kB     
 Downloading: 430 kB     
@@ -706,34 +701,30 @@ Downloading: 430 kB
 Downloading: 430 kB     
 Downloading: 430 kB     
 Downloading: 430 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 440 kB     
-Downloading: 460 kB     
-Downloading: 460 kB     
-Downloading: 460 kB     
-Downloading: 460 kB     
-Downloading: 460 kB     
-Downloading: 460 kB     
-Downloading: 460 kB     
-Downloading: 460 kB     
-Downloading: 460 kB     
-Downloading: 460 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 450 kB     
+Downloading: 470 kB     
+Downloading: 470 kB     
+Downloading: 470 kB     
+Downloading: 470 kB     
+Downloading: 470 kB     
+Downloading: 470 kB     
+Downloading: 470 kB     
+Downloading: 470 kB     
 Downloading: 480 kB     
 Downloading: 480 kB     
 Downloading: 480 kB     
@@ -744,26 +735,6 @@ Downloading: 480 kB
 Downloading: 480 kB     
 Downloading: 480 kB     
 Downloading: 480 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 490 kB     
-Downloading: 500 kB     
-Downloading: 500 kB     
-Downloading: 500 kB     
-Downloading: 500 kB     
 Downloading: 500 kB     
 Downloading: 500 kB     
 Downloading: 500 kB     
@@ -788,12 +759,6 @@ Downloading: 530 kB
 Downloading: 530 kB     
 Downloading: 530 kB     
 Downloading: 530 kB     
-Downloading: 530 kB     
-Downloading: 530 kB     
-Downloading: 540 kB     
-Downloading: 540 kB     
-Downloading: 540 kB     
-Downloading: 540 kB     
 Downloading: 550 kB     
 Downloading: 550 kB     
 Downloading: 550 kB     
@@ -804,28 +769,28 @@ Downloading: 550 kB
 Downloading: 550 kB     
 Downloading: 550 kB     
 Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 550 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
-Downloading: 570 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 560 kB     
+Downloading: 580 kB     
+Downloading: 580 kB     
+Downloading: 580 kB     
+Downloading: 580 kB     
+Downloading: 580 kB     
+Downloading: 580 kB     
 Downloading: 590 kB     
 Downloading: 590 kB     
 Downloading: 590 kB     
@@ -836,24 +801,18 @@ Downloading: 590 kB
 Downloading: 590 kB     
 Downloading: 590 kB     
 Downloading: 590 kB     
-Downloading: 590 kB     
-Downloading: 590 kB     
-Downloading: 590 kB     
-Downloading: 590 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
-Downloading: 600 kB     
+Downloading: 610 kB     
+Downloading: 610 kB     
+Downloading: 610 kB     
+Downloading: 610 kB     
+Downloading: 610 kB     
+Downloading: 610 kB     
+Downloading: 610 kB     
+Downloading: 610 kB     
+Downloading: 610 kB     
+Downloading: 610 kB     
+Downloading: 620 kB     
+Downloading: 620 kB     
 Downloading: 620 kB     
 Downloading: 620 kB     
 Downloading: 620 kB     
@@ -874,16 +833,22 @@ Downloading: 640 kB
 Downloading: 640 kB     
 Downloading: 640 kB     
 Downloading: 640 kB     
-Downloading: 650 kB     
-Downloading: 650 kB     
-Downloading: 650 kB     
-Downloading: 650 kB     
-Downloading: 650 kB     
-Downloading: 650 kB     
-Downloading: 650 kB     
-Downloading: 650 kB     
-Downloading: 650 kB     
-Downloading: 650 kB     
+Downloading: 640 kB     
+Downloading: 640 kB     
+Downloading: 640 kB     
+Downloading: 640 kB     
+Downloading: 640 kB     
+Downloading: 640 kB     
+Downloading: 660 kB     
+Downloading: 660 kB     
+Downloading: 660 kB     
+Downloading: 660 kB     
+Downloading: 660 kB     
+Downloading: 660 kB     
+Downloading: 660 kB     
+Downloading: 660 kB     
+Downloading: 660 kB     
+Downloading: 660 kB     
 Downloading: 670 kB     
 Downloading: 670 kB     
 Downloading: 670 kB     
@@ -892,30 +857,16 @@ Downloading: 670 kB
 Downloading: 670 kB     
 Downloading: 670 kB     
 Downloading: 670 kB     
-Downloading: 670 kB     
-Downloading: 670 kB     
-Downloading: 670 kB     
-Downloading: 670 kB     
-Downloading: 670 kB     
-Downloading: 670 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 680 kB     
-Downloading: 700 kB     
-Downloading: 700 kB     
-Downloading: 700 kB     
-Downloading: 700 kB     
+Downloading: 690 kB     
+Downloading: 690 kB     
+Downloading: 690 kB     
+Downloading: 690 kB     
+Downloading: 690 kB     
+Downloading: 690 kB     
+Downloading: 690 kB     
+Downloading: 690 kB     
+Downloading: 690 kB     
+Downloading: 690 kB     
 Downloading: 710 kB     
 Downloading: 710 kB     
 Downloading: 710 kB     
@@ -938,28 +889,26 @@ Downloading: 720 kB
 Downloading: 720 kB     
 Downloading: 720 kB     
 Downloading: 720 kB     
-Downloading: 720 kB     
-Downloading: 720 kB     
-Downloading: 730 kB     
-Downloading: 730 kB     
-Downloading: 730 kB     
-Downloading: 730 kB     
-Downloading: 730 kB     
-Downloading: 730 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
-Downloading: 750 kB     
+Downloading: 740 kB     
+Downloading: 740 kB     
+Downloading: 740 kB     
+Downloading: 740 kB     
+Downloading: 740 kB     
+Downloading: 740 kB     
+Downloading: 740 kB     
+Downloading: 740 kB     
+Downloading: 740 kB     
+Downloading: 740 kB     
+Downloading: 760 kB     
+Downloading: 760 kB     
+Downloading: 760 kB     
+Downloading: 760 kB     
+Downloading: 760 kB     
+Downloading: 760 kB     
+Downloading: 760 kB     
+Downloading: 760 kB     
+Downloading: 760 kB     
+Downloading: 760 kB     
 Downloading: 770 kB     
 Downloading: 770 kB     
 Downloading: 770 kB     
@@ -970,20 +919,8 @@ Downloading: 770 kB
 Downloading: 770 kB     
 Downloading: 770 kB     
 Downloading: 770 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
-Downloading: 780 kB     
+Downloading: 770 kB     
+Downloading: 770 kB     
 Downloading: 800 kB     
 Downloading: 800 kB     
 Downloading: 800 kB     
@@ -992,6 +929,14 @@ Downloading: 800 kB
 Downloading: 800 kB     
 Downloading: 800 kB     
 Downloading: 800 kB     
+Downloading: 800 kB     
+Downloading: 800 kB     
+Downloading: 810 kB     
+Downloading: 810 kB     
+Downloading: 810 kB     
+Downloading: 810 kB     
+Downloading: 810 kB     
+Downloading: 810 kB     
 Downloading: 820 kB     
 Downloading: 820 kB     
 Downloading: 820 kB     
@@ -1006,20 +951,16 @@ Downloading: 820 kB
 Downloading: 820 kB     
 Downloading: 820 kB     
 Downloading: 820 kB     
-Downloading: 820 kB     
-Downloading: 820 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
-Downloading: 830 kB     
+Downloading: 840 kB     
+Downloading: 840 kB     
+Downloading: 840 kB     
+Downloading: 840 kB     
+Downloading: 840 kB     
+Downloading: 840 kB     
+Downloading: 840 kB     
+Downloading: 840 kB     
+Downloading: 840 kB     
+Downloading: 840 kB     
 Downloading: 850 kB     
 Downloading: 850 kB     
 Downloading: 850 kB     
@@ -1028,58 +969,50 @@ Downloading: 850 kB
 Downloading: 850 kB     
 Downloading: 850 kB     
 Downloading: 850 kB     
-Downloading: 850 kB     
-Downloading: 850 kB     
-Downloading: 850 kB     
-Downloading: 850 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
-Downloading: 860 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
+Downloading: 870 kB     
 Downloading: 880 kB     
 Downloading: 880 kB     
 Downloading: 880 kB     
 Downloading: 880 kB     
 Downloading: 880 kB     
 Downloading: 880 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 890 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
-Downloading: 910 kB     
+Downloading: 880 kB     
+Downloading: 880 kB     
+Downloading: 880 kB     
+Downloading: 880 kB     
+Downloading: 880 kB     
+Downloading: 880 kB     
+Downloading: 880 kB     
+Downloading: 880 kB     
+Downloading: 900 kB     
+Downloading: 900 kB     
+Downloading: 900 kB     
+Downloading: 900 kB     
+Downloading: 900 kB     
+Downloading: 900 kB     
+Downloading: 900 kB     
+Downloading: 900 kB     
+Downloading: 900 kB     
+Downloading: 900 kB     
+Downloading: 920 kB     
+Downloading: 920 kB     
+Downloading: 920 kB     
+Downloading: 920 kB     
+Downloading: 920 kB     
+Downloading: 920 kB     
+Downloading: 920 kB     
+Downloading: 920 kB     
 Downloading: 920 kB     
 Downloading: 920 kB     
 Downloading: 930 kB     
@@ -1088,18 +1021,18 @@ Downloading: 930 kB
 Downloading: 930 kB</code></pre>
 <pre class="r"><code>hh_data_me</code></pre>
 <pre><code>## # A tibble: 12,506 x 5
-##    ACCESS_label                             HHLANP_label       HINCP FS       NP
-##    &lt;chr&gt;                                    &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
-##  1 Yes, by paying a cell phone company or ~ English only hou~  53000 2         4
-##  2 Yes, by paying a cell phone company or ~ English only hou~  53000 2         4
-##  3 Yes, by paying a cell phone company or ~ English only hou~  53000 2         4
-##  4 Yes, by paying a cell phone company or ~ English only hou~  53000 2         4
-##  5 Yes, by paying a cell phone company or ~ English only hou~  14200 2         1
-##  6 Yes, by paying a cell phone company or ~ English only hou~ 118200 2         2
-##  7 Yes, by paying a cell phone company or ~ English only hou~ 118200 2         2
-##  8 Yes, by paying a cell phone company or ~ English only hou~   8000 2         3
-##  9 Yes, by paying a cell phone company or ~ English only hou~   8000 2         3
-## 10 Yes, by paying a cell phone company or ~ English only hou~   8000 2         3
+##    ACCESS_label                             HHLANP_label       HINCP   NRC    NP
+##    &lt;chr&gt;                                    &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 Yes, by paying a cell phone company or ~ English only hou~  53000     2     4
+##  2 Yes, by paying a cell phone company or ~ English only hou~  53000     2     4
+##  3 Yes, by paying a cell phone company or ~ English only hou~  53000     2     4
+##  4 Yes, by paying a cell phone company or ~ English only hou~  53000     2     4
+##  5 Yes, by paying a cell phone company or ~ English only hou~  14200     0     1
+##  6 Yes, by paying a cell phone company or ~ English only hou~ 118200     0     2
+##  7 Yes, by paying a cell phone company or ~ English only hou~ 118200     0     2
+##  8 Yes, by paying a cell phone company or ~ English only hou~   8000     0     3
+##  9 Yes, by paying a cell phone company or ~ English only hou~   8000     0     3
+## 10 Yes, by paying a cell phone company or ~ English only hou~   8000     0     3
 ## # ... with 12,496 more rows</code></pre>
 <pre class="r"><code>write_csv(hh_data_me, &quot;hh_data_me.csv&quot;)</code></pre>
 </div>
