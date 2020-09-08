@@ -41,14 +41,11 @@ Individuals who lack internet access face a wide spectrum of limited opportuniti
 
 Because residential internet is provided and billed by the housing unit, household-level data provides the best context for analysis. I choose to limit my analysis to Maine because it is a state in which internet access is a particularly pressing concern in rural and remote communities. 
 
-I will explore characteristics of households and their respective housing units in the context of whether or not they have internet access, seeking to develop understandings upon which further explorations of barriers to internet access could be based in future studies. My analysis will consider 12,506 observations. The categorical variables I consider are access to the internet (ACCESS) and detailed household language (HHLANP). The continuous variables I consider are Household income over the past 12 months using ADJINC to adjust to constant dollars (HINCP), Yearly food stamp/Supplemental Nutrition Assistance Program recipiency (FS), and number of persons in this household (NP). I use tenure (TEN) to filter out vacant housing units. 
+I will explore characteristics of households and their respective housing units in the context of whether or not they have internet access, seeking to develop understandings upon which further explorations of barriers to internet access could be based in future studies. My analysis will consider 12,506 observations. The categorical variables I consider are access to the internet (ACCESS) and detailed household language (HHLANP). The continuous variables I consider are household income over the past 12 months using ADJINC to adjust to constant dollars (HINCP), yearly food stamp/Supplemental Nutrition Assistance Program recipiency (FS), and number of persons in this household (NP). I use tenure (TEN) to filter out vacant housing units. 
 
+## Loading, displaying, and saving selected Variables
 
-
-
-## Loading selected Variables
-
-```{r load selected microdata variables, message=FALSE}
+```{r load selected microdata variables}
 hh_data_me <- get_pums(variables = c("ACCESS",
                                   "HHLANP", 
                                   "HINCP",
@@ -62,11 +59,12 @@ hh_data_me <- get_pums(variables = c("ACCESS",
    filter(TEN_label != "N/A (GQ/vacant)") %>%
 select(ACCESS_label, HHLANP_label, HINCP, FS, NP)
 ```
+
 ```{r show loaded microdata variables, message=FALSE}
 hh_data_me
 ```
 
-```{r save data, message=FALSE}
+```{r save data}
 write_csv(hh_data_me, "hh_data_me.csv")
 ```
 
