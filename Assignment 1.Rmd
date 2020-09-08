@@ -39,7 +39,7 @@ area_vars_2010 <- load_variables(2010, "sf1")
 
 Individuals who lack internet access face a wide spectrum of limited opportunities for economic and social connections in today's society, poignantly emphasized by the COVID-19 pandemic. 
 
-Because residential internet is provided and billed by the dwelling unit, household-level data provides the best context for analysis. I'm interested in exploring the characteristics of households who lack internet access, seeking to develop understandings upon which further explorations of barriers to internet access can be based. I choose to limit my analysis to Maine, both because it is a state with which I am familiar and because the rural nature of much of the state adds an intriguing layer to my analysis.
+Because residential internet is provided and billed by the dwelling unit, household-level data provides the best context for analysis. I'm interested in exploring the characteristics of households who lack internet access, seeking to develop understandings upon which further explorations of barriers to internet access can be based. I choose to limit my analysis to Maine, both because it is a state with which I am familiar and because the rural nature of much of the state adds an intriguing layer to my analysis. Because I excluded vacant housing units, my analysis will consider 12,506 observations.
 
 
 ## Loading selected Variables
