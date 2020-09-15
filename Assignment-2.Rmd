@@ -1,0 +1,38 @@
+---
+title: "Assignment2"
+author: "Nickie Mitch"
+date: "9/14/2020"
+output: html_document
+---
+
+## Load libraries
+
+```{r load libaries, message=FALSE}
+library(tidyverse)
+library(ggplot2)
+```
+
+## Load Household-level Data
+```{r load hh data, message=FALSE}
+hh_data <- read_csv("household_data_me.csv")
+```
+
+## Distribution of a continuous variable (household income over the past 12 months)
+
+### Summary Statistics
+
+```{r summary statistics, message=FALSE}
+HINCP_Summary <- summary(hh_data$HINCP)
+
+HINCP_Summary
+```
+
+### Standard Deviation
+```{r standard deviation, message=FALSE}
+sd(hh_data$HINCP)
+```
+
+### 95% Confidence Interval
+```{r 95 confidence interval, message=FALSE}
+conf_int <- t.test(hh_data$HINCP)
+```
