@@ -35,4 +35,48 @@ sd(hh_data$HINCP)
 ### 95% Confidence Interval
 ```{r 95 confidence interval, message=FALSE}
 conf_int <- t.test(hh_data$HINCP)
+
+conf_int
+
+conf_int$conf.int[1]
+
+conf_int$conf.int[2]
 ```
+
+### Histogram
+```{r histogram, message=FALSE}
+hist(hh_data$HINCP)
+```
+
+### Fancy Histogram
+```{r fancy histogram, message=FALSE}
+ggplot(hh_data, aes(x = HINCP)) +
+  geom_histogram()
+```
+
+## Proportions of a categorical variable (internet access)
+
+### List all possible values
+```{r list values, message=FALSE}
+unique(hh_data$ACCESS_label)
+```
+
+### Number of observations by category
+```{r number of observations, message=FALSE}
+table(hh_data$ACCESS_label)
+```
+
+### Observations to proportions
+```{r proportions, message=FALSE}
+table(hh_data$ACCESS_label) / sum(table(hh_data$ACCESS_label))
+```
+```{r mean and confidence interval individually, message=FALSE}
+mean(hh_data$ACCESS_label == "Yes, by paying a cell phone company or Internet service provider")
+
+t.test(hh_data$ACCESS_label == "Yes, by paying a cell phone company or Internet service provider")
+```
+## Distribution of a continuous variable (number of related children in this household)
+
+## Distribution of a continuous variable (number of persons in this household)
+
+## Proportions of a categorical variable (detailed household language)
