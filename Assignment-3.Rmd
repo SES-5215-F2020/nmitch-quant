@@ -1,0 +1,84 @@
+---
+title: "Assignment 3"
+author: "Nickie Mitch"
+date: "9/18/2020"
+output: html_document
+---
+
+## Load Libraries
+```{r load libraries, message=FALSE}
+library(tidyverse)
+library(ggplot2)
+```
+
+## Load Data
+```{r load data}
+hh_data <- read_csv("household_data_me.csv") %>%
+  mutate(struct_type = case_when(
+    HHLANP_label=="Japanese"~"Some other language",
+    HHLANP_label=="English only household"~"English",
+    HHLANP_label=="Korean"~"Some other language",
+    HHLANP_label=="German"~"Some other language",
+    HHLANP_label=="Other Native North American Languages"~"Some other language",
+    HHLANP_label=="Arabic"~"Some other language",
+    HHLANP_label=="Thai"~"Some other language",
+    HHLANP_label=="Italian"~"some other language",
+    HHLANP_label=="Chinese"~"Some other language",
+    HHLANP_label=="Pennsylvania German"~"Some other language",
+    HHLANP_label=="Urdu"~"Some other language",
+    HHLANP_label=="Cebuano"~"Some other language",
+    HHLANP_label=="Tagalog"~"Some other language",
+    HHLANP_label=="Romanian"~"Some other language",
+    HHLANP_label=="Other Bantu Languages"~"Some other language",
+    HHLANP_label=="Bosnian"~"Some other language",
+    HHLANP_label=="Hindi"~"Some other language",
+    HHLANP_label=="Portuguese"~"Some other language",
+    HHLANP_label=="Mandarin"~"Some other language",
+    HHLANP_label=="Cantonese"~"Some other language",
+    HHLANP_label=="Filipino"~"Some other language",
+    HHLANP_label=="Bengali"~"Some other language",
+    HHLANP_label=="Somali"~"Some other language",
+    HHLANP_label=="Serbian"~"Some other language",
+    HHLANP_label=="Russian"~"Some other language",
+    HHLANP_label=="Vietnamese"~"Some other language",
+    HHLANP_label=="Lithuanian"~"Some other language",
+    HHLANP_label=="Farsi"~"Some other language",
+    HHLANP_label=="Turkish"~"Some other language",
+    HHLANP_label=="Tamil"~"Some other language",
+    HHLANP_label=="Finnish"~"Some other language",
+    HHLANP_label=="Telugu"~"Some other language",
+    HHLANP_label=="Swahili"~"Some other language",
+    ACCESS_label=="Yes, by paying a cell phone company or Internet service provider"~"Yes",
+    ACCESS_label=="No access to the Internet at this house, apartment, or mobile home"~"No",
+    ACCESS_label=="Yes, without paying a cell phone company or Internet service provider"~"Yes"))
+```
+
+## Relationship Between Household Income (HINCP) and Number of Related Children (NRC) 
+These are two continuous variables. 
+
+```{r relationship between two continuous variables}
+correlation <- cor.test(hh_data$HINCP, hh_data$NRC)
+
+correlation
+```
+```{r plot}
+options(scipen=10000)
+ggplot(hh_data, aes(x = HINCP, y = NRC)) +
+  geom_point(size = 0.5, alpha = 0.25, position = "jitter") +
+  geom_smooth() +
+  theme_bw() +
+  scale_x_continuous(name = "Household Income Over the Past 12 Months") +
+  scale_y_continuous(name = "Number of Related Children", 
+                     breaks = seq(0, 10, by = 1),
+                     labels = paste(prettyNum(seq(0, 10, by = 1),
+                                              big.mark = ","))) +
+  annotate(geom = "text", x = 0, y = 10, 
+           label = paste("Correlation (95-percent confidence):",
+                         prettyNum(correlation$conf.int[1]), 
+                         "to",
+                         prettyNum(correlation$conf.int[2])),
+           hjust = 0)
+```
+
+## Relationship Between Household Income (HINCP) and Internet Access (ACCESS)
+These are a continuous variable and a binary variable.
