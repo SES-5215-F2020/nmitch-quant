@@ -14,15 +14,15 @@ library(ggplot2)
 ## Load Data
 ```{r load data}
 hh_data <- read_csv("household_data_me.csv") %>%
-  mutate(struct_type = case_when(
+  mutate(LANGUAGE = case_when(
     HHLANP_label=="Japanese"~"Some other language",
     HHLANP_label=="English only household"~"English",
     HHLANP_label=="Korean"~"Some other language",
     HHLANP_label=="German"~"Some other language",
-    HHLANP_label=="Other Native North American Languages"~"Some other language",
+    HHLANP_label=="Other Native North American languages"~"Some other language",
     HHLANP_label=="Arabic"~"Some other language",
     HHLANP_label=="Thai"~"Some other language",
-    HHLANP_label=="Italian"~"some other language",
+    HHLANP_label=="Italian"~"Some other language",
     HHLANP_label=="Chinese"~"Some other language",
     HHLANP_label=="Pennsylvania German"~"Some other language",
     HHLANP_label=="Urdu"~"Some other language",
@@ -47,16 +47,46 @@ hh_data <- read_csv("household_data_me.csv") %>%
     HHLANP_label=="Tamil"~"Some other language",
     HHLANP_label=="Finnish"~"Some other language",
     HHLANP_label=="Telugu"~"Some other language",
-    HHLANP_label=="Swahili"~"Some other language",
+    HHLANP_label=="Swahili"~"Some other language", 
+    HHLANP_label=="Spanish"~"Spanish",
+    HHLANP_label=="French"~"French"),
+  INTERNET = case_when(
     ACCESS_label=="Yes, by paying a cell phone company or Internet service provider"~"Yes",
     ACCESS_label=="No access to the Internet at this house, apartment, or mobile home"~"No",
     ACCESS_label=="Yes, without paying a cell phone company or Internet service provider"~"Yes"))
 ```
 
-## Relationship Between Household Income (HINCP) and Number of Related Children (NRC) 
+## Relationship Between Household Income (HINCP) and Number of Persons (NP) 
 These are two continuous variables. 
 
 ```{r relationship between two continuous variables}
+correlation <- cor.test(hh_data$HINCP, hh_data$NP)
+
+correlation
+```
+```{r plot A1}
+options(scipen=10000)
+ggplot(hh_data, aes(x = HINCP, y = NP)) +
+  geom_point(size = 0.5, alpha = 0.25, position = "jitter") +
+  geom_smooth() +
+  theme_bw() +
+  scale_x_continuous(name = "Household Income Over the Past 12 Months") +
+  scale_y_continuous(name = "Number of Persons", 
+                     breaks = seq(0, 10, by = 1),
+                     labels = paste(prettyNum(seq(0, 10, by = 1),
+                                              big.mark = ","))) +
+  annotate(geom = "text", x = 0, y = 10, 
+           label = paste("Correlation (95-percent confidence):",
+                         prettyNum(correlation$conf.int[1]), 
+                         "to",
+                         prettyNum(correlation$conf.int[2])),
+           hjust = 0)
+```
+
+## Relationship Between Household Income (HINCP) and Number of Related Children (NRC) 
+These are two continuous variables. 
+
+```{r relationship between two continuous variables 2}
 correlation <- cor.test(hh_data$HINCP, hh_data$NRC)
 
 correlation
@@ -80,5 +110,79 @@ ggplot(hh_data, aes(x = HINCP, y = NRC)) +
            hjust = 0)
 ```
 
-## Relationship Between Household Income (HINCP) and Internet Access (ACCESS)
+```{r plot A2}
+options(scipen=10000)
+ggplot(hh_data, aes(x = HINCP, y = NRC)) +
+  geom_point(size = 0.5, alpha = 0.25, position = "jitter") +
+  geom_smooth() +
+  theme_bw() +
+  scale_x_continuous(name = "Household Income Over the Past 12 Months") +
+  scale_y_continuous(name = "Number of Related  Children", 
+                     breaks = seq(0, 10, by = 1),
+                     labels = paste(prettyNum(seq(0, 10, by = 1),
+                                              big.mark = ","))) +
+  annotate(geom = "text", x = 0, y = 10, 
+           label = paste("Correlation (95-percent confidence):",
+                         prettyNum(correlation$conf.int[1]), 
+                         "to",
+                         prettyNum(correlation$conf.int[2])),
+           hjust = 0)
+```
+
+
+## Relationship Between Household Income (HINCP) and Internet Access (INTERNET)
 These are a continuous variable and a binary variable.
+
+```{r continuous and binary}
+difference = t.test(HINCP ~ INTERNET == "Yes",
+                    data = hh_data)
+
+difference
+```
+
+```{r plot A3}
+ggplot(hh_data, aes(x = INTERNET, y = HINCP)) +
+  geom_violin() +
+  theme_bw() +
+  scale_x_discrete(name = "Internet Access",
+                   labels = c("No", "Yes")) +
+   scale_y_continuous(name = "Household Income Over the Past 12 Months", 
+                     breaks = seq(0, 500000, by = 100000),
+                     labels = paste("$", prettyNum(seq(0, 500000, by = 100000)))) +
+  annotate(geom = "text", x = 1.5, y = 700000, size = 3,
+           label = paste("Difference in means\n(95% confidence):\n$",
+                         prettyNum(abs(difference$conf.int[2]), 
+                                   digits = 0), " to $",
+                         prettyNum(abs(difference$conf.int[1]), 
+                                   digits = 0),
+                         sep = "")) +
+  annotate(geom = "text", x = 1, y = difference$estimate[1], size = 3,
+           label = paste("Mean (95% confidence):\n$",
+                         prettyNum(difference$estimate[1], digits = 0))) +
+  annotate(geom = "text", x = 2, y = difference$estimate[2], size = 3,
+           label = paste("Mean (95% confidence):\n$",
+                         prettyNum(difference$estimate[2], digits = 0)))
+```
+
+## Relationship Between Household Income (HINCP) and Internet Access (INTERNET)
+These are a continuous variable and a binary variable.
+
+```{r continuous and categorical}
+anova <- aov(HINCP ~ LANGUAGE, data = hh_data)
+
+summary(anova)
+```
+
+```{r plot A4}
+ggplot(hh_data, aes(x = LANGUAGE, y = HINCP)) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_x_discrete(name = "Primary Household Language") +
+  scale_y_continuous(name = "Household Income Over the Past 12 Months", 
+                      breaks = seq(0, 500000, by = 100000),
+                     labels = paste("$", 
+                                    prettyNum(seq(0, 500000, by = 100000),
+                                              big.mark = ","))) 
+                                             
+```
