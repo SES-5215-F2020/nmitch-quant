@@ -12,7 +12,7 @@ library(ggplot2)
 ```
 
 ## Load Data
-```{r load data}
+```{r load data, message=FALSE}
 hh_data <- read_csv("household_data_me.csv") %>%
   mutate(LANGUAGE = case_when(
     HHLANP_label=="Japanese"~"Some other language",
@@ -59,12 +59,12 @@ hh_data <- read_csv("household_data_me.csv") %>%
 ## Relationship Between Household Income (HINCP) and Number of Persons (NP) 
 These are two continuous variables. 
 
-```{r relationship between two continuous variables}
+```{r relationship HINCP AND NP}
 correlation <- cor.test(hh_data$HINCP, hh_data$NP)
 
 correlation
 ```
-```{r plot A1}
+```{r plot HINCP and NP}
 options(scipen=10000)
 ggplot(hh_data, aes(x = HINCP, y = NP)) +
   geom_point(size = 0.5, alpha = 0.25, position = "jitter") +
@@ -86,31 +86,12 @@ ggplot(hh_data, aes(x = HINCP, y = NP)) +
 ## Relationship Between Household Income (HINCP) and Number of Related Children (NRC) 
 These are two continuous variables. 
 
-```{r relationship between two continuous variables 2}
+```{r relationship HINCP AND NRC}
 correlation <- cor.test(hh_data$HINCP, hh_data$NRC)
 
 correlation
 ```
-```{r plot}
-options(scipen=10000)
-ggplot(hh_data, aes(x = HINCP, y = NRC)) +
-  geom_point(size = 0.5, alpha = 0.25, position = "jitter") +
-  geom_smooth() +
-  theme_bw() +
-  scale_x_continuous(name = "Household Income Over the Past 12 Months") +
-  scale_y_continuous(name = "Number of Related Children", 
-                     breaks = seq(0, 10, by = 1),
-                     labels = paste(prettyNum(seq(0, 10, by = 1),
-                                              big.mark = ","))) +
-  annotate(geom = "text", x = 0, y = 10, 
-           label = paste("Correlation (95-percent confidence):",
-                         prettyNum(correlation$conf.int[1]), 
-                         "to",
-                         prettyNum(correlation$conf.int[2])),
-           hjust = 0)
-```
-
-```{r plot A2}
+```{r plot HINCP and NRC}
 options(scipen=10000)
 ggplot(hh_data, aes(x = HINCP, y = NRC)) +
   geom_point(size = 0.5, alpha = 0.25, position = "jitter") +
@@ -133,14 +114,14 @@ ggplot(hh_data, aes(x = HINCP, y = NRC)) +
 ## Relationship Between Household Income (HINCP) and Internet Access (INTERNET)
 These are a continuous variable and a binary variable.
 
-```{r continuous and binary}
-difference = t.test(HINCP ~ INTERNET == "Yes",
+```{r HINCP and INTERNET}
+difference1 = t.test(HINCP ~ INTERNET == "Yes",
                     data = hh_data)
 
-difference
+difference1
 ```
 
-```{r plot A3}
+```{r plot HINCP AND INTERNET}
 ggplot(hh_data, aes(x = INTERNET, y = HINCP)) +
   geom_violin() +
   theme_bw() +
@@ -151,29 +132,29 @@ ggplot(hh_data, aes(x = INTERNET, y = HINCP)) +
                      labels = paste("$", prettyNum(seq(0, 500000, by = 100000)))) +
   annotate(geom = "text", x = 1.5, y = 700000, size = 3,
            label = paste("Difference in means\n(95% confidence):\n$",
-                         prettyNum(abs(difference$conf.int[2]), 
+                         prettyNum(abs(difference1$conf.int[2]), 
                                    digits = 0), " to $",
-                         prettyNum(abs(difference$conf.int[1]), 
+                         prettyNum(abs(difference1$conf.int[1]), 
                                    digits = 0),
                          sep = "")) +
-  annotate(geom = "text", x = 1, y = difference$estimate[1], size = 3,
+  annotate(geom = "text", x = 1, y = difference1$estimate[1], size = 3,
            label = paste("Mean (95% confidence):\n$",
-                         prettyNum(difference$estimate[1], digits = 0))) +
-  annotate(geom = "text", x = 2, y = difference$estimate[2], size = 3,
+                         prettyNum(difference1$estimate[1], digits = 0))) +
+  annotate(geom = "text", x = 2, y = difference1$estimate[2], size = 3,
            label = paste("Mean (95% confidence):\n$",
-                         prettyNum(difference$estimate[2], digits = 0)))
+                         prettyNum(difference1$estimate[2], digits = 0)))
 ```
 
-## Relationship Between Household Income (HINCP) and Internet Access (INTERNET)
-These are a continuous variable and a binary variable.
+## Relationship Between Household Income (HINCP) and Household Language (LANGUAGE)
+These are a continuous variable and a categorical variable.
 
-```{r continuous and categorical}
+```{r relationship HINCP and LANGUAGE}
 anova <- aov(HINCP ~ LANGUAGE, data = hh_data)
 
 summary(anova)
 ```
 
-```{r plot A4}
+```{r plot HINCP and LANGUAGE}
 ggplot(hh_data, aes(x = LANGUAGE, y = HINCP)) +
   geom_boxplot() +
   theme_bw() +
@@ -185,4 +166,173 @@ ggplot(hh_data, aes(x = LANGUAGE, y = HINCP)) +
                                     prettyNum(seq(0, 500000, by = 100000),
                                               big.mark = ","))) 
                                              
+```
+
+## Relationship Between Numper of Persons (NP) and Household Language (LANGUAGE)
+These are a continuous variable and a categorical variable.
+
+```{r relationship NP and LANGUAGE}
+anova <- aov(NP ~ LANGUAGE, data = hh_data)
+
+summary(anova)
+```
+
+```{r plot NP and LANGUAGE}
+ggplot(hh_data, aes(x = LANGUAGE, y = NP)) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_x_discrete(name = "Primary Household Language") +
+  scale_y_continuous(name = "Number of Persons in Household", 
+                      breaks = seq(0, 10, by = 1),
+                     labels = paste((seq(0, 10, by = 1)))) 
+                                             
+```
+
+## Relationship Between Number of Related Children (NRC) and Household Language (LANGUAGE)
+These are a continuous variable and a categorical variable.
+
+```{r relationship NRC and LANGUAGE}
+anova <- aov(NRC ~ LANGUAGE, data = hh_data)
+
+summary(anova)
+```
+
+```{r plot NRC and LANGUAGE}
+ggplot(hh_data, aes(x = LANGUAGE, y = NRC)) +
+  geom_boxplot() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_x_discrete(name = "Primary Household Language") +
+  scale_y_continuous(name = "Number of Related Children in Household", 
+                      breaks = seq(0, 15, by = 1),
+                     labels = paste((seq(0, 15, by = 1)))) 
+                                             
+```
+
+## Relationship Between Internet Access (INTERNET) and Household Language (LANGUAGE)
+These are a continuous variable and a categorical variable.
+
+```{r relationship INTERNET and LANGUAGE}
+chi_sq <- chisq.test(hh_data$LANGUAGE, hh_data$INTERNET == 
+                       "Yes") 
+
+chi_sq
+```
+Instructions for making this mosaic plot were found at https://stackoverflow.com/questions/19233365/how-to-create-a-marimekko-mosaic-plot-in-ggplot2 
+```{r plot INTERNET and LANGUAGE}
+df <- hh_data %>%
+  group_by(LANGUAGE, INTERNET) %>%
+  summarise(count = n()) %>%
+  mutate(prop = count/sum(count)) %>%
+  ungroup()
+
+
+ggplot(df, aes(x = INTERNET, y = prop, fill = LANGUAGE)) +
+  geom_bar(stat = "identity", position = "fill", colour = "black") +
+  facet_grid(~INTERNET, scales = "free_x", space = "free_x") +
+  scale_fill_brewer(palette = "RdYlGn") +
+  ggtitle("Internet Access") + 
+  theme_void() 
+```
+
+## Relationship Between Number of Persons (NP) and Number of Related Children (NRC) 
+These are two continuous variables. 
+
+```{r relationship NP AND NRC}
+correlation <- cor.test(hh_data$NP, hh_data$NRC)
+
+correlation
+```
+
+```{r plot}
+options(scipen=10000)
+ggplot(hh_data, aes(x = NP, y = NRC)) +
+  geom_point(size = 0.5, alpha = 0.25, position = "jitter") +
+  geom_smooth() +
+  theme_bw() +
+  scale_x_continuous(name = "Number of Persons",
+                     breaks = seq(0, 15, by = 1),
+                     labels = paste(prettyNum(seq(0, 15, by = 1),
+                                              big.mark = ",")))+
+  scale_y_continuous(name = "Number of Related Children", 
+                     breaks = seq(0, 15, by = 1),
+                     labels = paste(prettyNum(seq(0, 15, by = 1),
+                                              big.mark = ","))) +
+  annotate(geom = "text", x = 0, y = 10, 
+           label = paste("Correlation (95-percent confidence):",
+                         prettyNum(correlation$conf.int[1]), 
+                         "to",
+                         prettyNum(correlation$conf.int[2])),
+           hjust = 0)
+```
+
+
+## Relationship Between Number of Persons (NP) and Internet Access (INTERNET)
+These are a continuous variable and a binary variable.
+
+```{r NP and INTERNET}
+difference2 = t.test(NP ~ INTERNET == "Yes",
+                    data = hh_data)
+
+difference2
+```
+
+```{r plot NP AND INTERNET}
+ggplot(hh_data, aes(x = INTERNET, y = NP)) +
+  geom_violin() +
+  theme_bw() +
+  scale_x_discrete(name = "Internet Access",
+                   labels = c("No", "Yes")) +
+   scale_y_continuous(name = "Number of Persons", 
+                     breaks = seq(0, 15, by = 1),
+                     labels = paste(prettyNum(seq(0, 15, by = 1)))) +
+  annotate(geom = "text", x = 1.5, y = 7, size = 3,
+           label = paste("Difference in means\n(95% confidence):\n",
+                         prettyNum(abs(difference2$conf.int[2]), 
+                                   digits = 0), " to ",
+                         prettyNum(abs(difference2$conf.int[1]), 
+                                   digits = 0),
+                         sep = "")) +
+  annotate(geom = "text", x = 1, y = difference2$estimate[1], size = 3,
+           label = paste("Mean (95% confidence):\n",
+                         prettyNum(difference2$estimate[1], digits = 0))) +
+  annotate(geom = "text", x = 2, y = difference2$estimate[2], size = 3,
+           label = paste("Mean (95% confidence):\n",
+                         prettyNum(difference2$estimate[2], digits = 0)))
+```
+
+
+## Relationship Between Number of Related Children (NRC) and Internet Access (INTERNET)
+These are a continuous variable and a binary variable.
+
+```{r NRC and INTERNET}
+difference3 = t.test(NRC ~ INTERNET == "Yes",
+                    data = hh_data)
+
+difference3
+```
+
+```{r plot NRC AND INTERNET}
+ggplot(hh_data, aes(x = INTERNET, y = NP)) +
+  geom_violin() +
+  theme_bw() +
+  scale_x_discrete(name = "Internet Access",
+                   labels = c("No", "Yes")) +
+   scale_y_continuous(name = "Number of Related Children", 
+                     breaks = seq(0, 15, by = 1),
+                     labels = paste(prettyNum(seq(0, 15, by = 1)))) +
+  annotate(geom = "text", x = 1.5, y = 7, size = 3,
+           label = paste("Difference in means\n(95% confidence):\n",
+                         prettyNum(abs(difference3$conf.int[2]), 
+                                   digits = 0), " to ",
+                         prettyNum(abs(difference3$conf.int[1]), 
+                                   digits = 0),
+                         sep = "")) +
+  annotate(geom = "text", x = 1, y = difference3$estimate[1], size = 3,
+           label = paste("Mean (95% confidence):\n",
+                         prettyNum(difference3$estimate[1], digits = 0))) +
+  annotate(geom = "text", x = 2, y = difference3$estimate[2], size = 3,
+           label = paste("Mean (95% confidence):\n",
+                         prettyNum(difference3$estimate[2], digits = 0)))
 ```
