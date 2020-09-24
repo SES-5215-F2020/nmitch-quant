@@ -5,18 +5,20 @@ date: "9/18/2020"
 output: html_document
 ---
 
-## Load Libraries
+### Load Libraries
 ```{r load libraries, message=FALSE}
 library(tidyverse)
 library(ggplot2)
 ```
 
-## Load Data
+### Load and Mutate Data
 ```{r load data, message=FALSE}
 hh_data <- read_csv("household_data_me.csv") %>%
   mutate(LANGUAGE = case_when(
-    HHLANP_label=="Japanese"~"Some other language",
     HHLANP_label=="English only household"~"English",
+     HHLANP_label=="Spanish"~"Spanish",
+    HHLANP_label=="French"~"French",
+    HHLANP_label=="Japanese"~"Some other language",
     HHLANP_label=="Korean"~"Some other language",
     HHLANP_label=="German"~"Some other language",
     HHLANP_label=="Other Native North American languages"~"Some other language",
@@ -29,7 +31,7 @@ hh_data <- read_csv("household_data_me.csv") %>%
     HHLANP_label=="Cebuano"~"Some other language",
     HHLANP_label=="Tagalog"~"Some other language",
     HHLANP_label=="Romanian"~"Some other language",
-    HHLANP_label=="Other Bantu Languages"~"Some other language",
+    HHLANP_label=="Other Bantu languages"~"Some other language",
     HHLANP_label=="Bosnian"~"Some other language",
     HHLANP_label=="Hindi"~"Some other language",
     HHLANP_label=="Portuguese"~"Some other language",
@@ -47,17 +49,20 @@ hh_data <- read_csv("household_data_me.csv") %>%
     HHLANP_label=="Tamil"~"Some other language",
     HHLANP_label=="Finnish"~"Some other language",
     HHLANP_label=="Telugu"~"Some other language",
+    HHLANP_label=="Swahili"~"Some other language",
+    HHLANP_label=="Greek"~"Some other language",
+    HHLANP_label=="Dutch"~"Some other language",
+    HHLANP_label=="Polish"~"Some other language", 
     HHLANP_label=="Swahili"~"Some other language", 
-    HHLANP_label=="Spanish"~"Spanish",
-    HHLANP_label=="French"~"French"),
+    HHLANP_label=="Chamorro"~"Some other language"),  
   INTERNET = case_when(
     ACCESS_label=="Yes, by paying a cell phone company or Internet service provider"~"Yes",
     ACCESS_label=="No access to the Internet at this house, apartment, or mobile home"~"No",
     ACCESS_label=="Yes, without paying a cell phone company or Internet service provider"~"Yes"))
 ```
 
-## Relationship Between Household Income (HINCP) and Number of Persons (NP) 
-These are two continuous variables. 
+### Relationship Between Household Income (HINCP) and Number of Persons (NP) 
+These are two continuous variables. There is a fairly weak, statistically significant positive correlation between them.
 
 ```{r relationship HINCP AND NP}
 correlation <- cor.test(hh_data$HINCP, hh_data$NP)
@@ -71,7 +76,7 @@ ggplot(hh_data, aes(x = HINCP, y = NP)) +
   geom_smooth() +
   theme_bw() +
   scale_x_continuous(name = "Household Income Over the Past 12 Months") +
-  scale_y_continuous(name = "Number of Persons", 
+  scale_y_continuous(name = "Number of Persons in Household", 
                      breaks = seq(0, 10, by = 1),
                      labels = paste(prettyNum(seq(0, 10, by = 1),
                                               big.mark = ","))) +
@@ -83,8 +88,8 @@ ggplot(hh_data, aes(x = HINCP, y = NP)) +
            hjust = 0)
 ```
 
-## Relationship Between Household Income (HINCP) and Number of Related Children (NRC) 
-These are two continuous variables. 
+### Relationship Between Household Income (HINCP) and Number of Related Children (NRC) 
+These are two continuous variables. There is a weak, statistically significant positive correlation between them.
 
 ```{r relationship HINCP AND NRC}
 correlation <- cor.test(hh_data$HINCP, hh_data$NRC)
@@ -98,7 +103,7 @@ ggplot(hh_data, aes(x = HINCP, y = NRC)) +
   geom_smooth() +
   theme_bw() +
   scale_x_continuous(name = "Household Income Over the Past 12 Months") +
-  scale_y_continuous(name = "Number of Related  Children", 
+  scale_y_continuous(name = "Number of Related  Children in Household", 
                      breaks = seq(0, 10, by = 1),
                      labels = paste(prettyNum(seq(0, 10, by = 1),
                                               big.mark = ","))) +
@@ -111,8 +116,8 @@ ggplot(hh_data, aes(x = HINCP, y = NRC)) +
 ```
 
 
-## Relationship Between Household Income (HINCP) and Internet Access (INTERNET)
-These are a continuous variable and a binary variable.
+### Relationship Between Household Income (HINCP) and Internet Access (INTERNET)
+These are a continuous variable and a binary variable. There is a statistically significant relationship between them.
 
 ```{r HINCP and INTERNET}
 difference1 = t.test(HINCP ~ INTERNET == "Yes",
@@ -125,7 +130,7 @@ difference1
 ggplot(hh_data, aes(x = INTERNET, y = HINCP)) +
   geom_violin() +
   theme_bw() +
-  scale_x_discrete(name = "Internet Access",
+  scale_x_discrete(name = "Does the Household Have Internet Access?",
                    labels = c("No", "Yes")) +
    scale_y_continuous(name = "Household Income Over the Past 12 Months", 
                      breaks = seq(0, 500000, by = 100000),
@@ -145,8 +150,8 @@ ggplot(hh_data, aes(x = INTERNET, y = HINCP)) +
                          prettyNum(difference1$estimate[2], digits = 0)))
 ```
 
-## Relationship Between Household Income (HINCP) and Household Language (LANGUAGE)
-These are a continuous variable and a categorical variable.
+### Relationship Between Household Income (HINCP) and Household Language (LANGUAGE)
+These are a continuous variable and a categorical variable. There is a statistically significant relationship between them.
 
 ```{r relationship HINCP and LANGUAGE}
 anova <- aov(HINCP ~ LANGUAGE, data = hh_data)
@@ -168,8 +173,8 @@ ggplot(hh_data, aes(x = LANGUAGE, y = HINCP)) +
                                              
 ```
 
-## Relationship Between Numper of Persons (NP) and Household Language (LANGUAGE)
-These are a continuous variable and a categorical variable.
+### Relationship Between Numper of Persons (NP) and Household Language (LANGUAGE)
+These are a continuous variable and a categorical variable. There is a stastically signficant relationship between them.
 
 ```{r relationship NP and LANGUAGE}
 anova <- aov(NP ~ LANGUAGE, data = hh_data)
@@ -189,8 +194,8 @@ ggplot(hh_data, aes(x = LANGUAGE, y = NP)) +
                                              
 ```
 
-## Relationship Between Number of Related Children (NRC) and Household Language (LANGUAGE)
-These are a continuous variable and a categorical variable.
+### Relationship Between Number of Related Children (NRC) and Household Language (LANGUAGE)
+These are a continuous variable and a categorical variable. There is a statistically signficant relationship between them.
 
 ```{r relationship NRC and LANGUAGE}
 anova <- aov(NRC ~ LANGUAGE, data = hh_data)
@@ -210,8 +215,9 @@ ggplot(hh_data, aes(x = LANGUAGE, y = NRC)) +
                                              
 ```
 
-## Relationship Between Internet Access (INTERNET) and Household Language (LANGUAGE)
-These are a continuous variable and a categorical variable.
+### Relationship Between Internet Access (INTERNET) and Household Language (LANGUAGE)
+These are a continuous variable and a categorical variable. There is a statistically significant relationship between them.
+
 
 ```{r relationship INTERNET and LANGUAGE}
 chi_sq <- chisq.test(hh_data$LANGUAGE, hh_data$INTERNET == 
@@ -231,13 +237,13 @@ df <- hh_data %>%
 ggplot(df, aes(x = INTERNET, y = prop, fill = LANGUAGE)) +
   geom_bar(stat = "identity", position = "fill", colour = "black") +
   facet_grid(~INTERNET, scales = "free_x", space = "free_x") +
-  scale_fill_brewer(palette = "RdYlGn") +
-  ggtitle("Internet Access") + 
+  scale_fill_brewer(palette = "Set2") +
+  ggtitle("Internet Access?") + 
   theme_void() 
 ```
 
-## Relationship Between Number of Persons (NP) and Number of Related Children (NRC) 
-These are two continuous variables. 
+### Relationship Between Number of Persons (NP) and Number of Related Children (NRC) 
+These are two continuous variables. There is a strong, statistically significant positive correlation between them.
 
 ```{r relationship NP AND NRC}
 correlation <- cor.test(hh_data$NP, hh_data$NRC)
@@ -251,11 +257,11 @@ ggplot(hh_data, aes(x = NP, y = NRC)) +
   geom_point(size = 0.5, alpha = 0.25, position = "jitter") +
   geom_smooth() +
   theme_bw() +
-  scale_x_continuous(name = "Number of Persons",
+  scale_x_continuous(name = "Number of Persons in Household",
                      breaks = seq(0, 15, by = 1),
                      labels = paste(prettyNum(seq(0, 15, by = 1),
                                               big.mark = ",")))+
-  scale_y_continuous(name = "Number of Related Children", 
+  scale_y_continuous(name = "Number of Related Children in Household", 
                      breaks = seq(0, 15, by = 1),
                      labels = paste(prettyNum(seq(0, 15, by = 1),
                                               big.mark = ","))) +
@@ -268,8 +274,8 @@ ggplot(hh_data, aes(x = NP, y = NRC)) +
 ```
 
 
-## Relationship Between Number of Persons (NP) and Internet Access (INTERNET)
-These are a continuous variable and a binary variable.
+### Relationship Between Number of Persons (NP) and Internet Access (INTERNET)
+These are a continuous variable and a binary variable. There is a statistically significant relationship between them.
 
 ```{r NP and INTERNET}
 difference2 = t.test(NP ~ INTERNET == "Yes",
@@ -282,9 +288,9 @@ difference2
 ggplot(hh_data, aes(x = INTERNET, y = NP)) +
   geom_violin() +
   theme_bw() +
-  scale_x_discrete(name = "Internet Access",
+  scale_x_discrete(name = "Does the household have internet access?",
                    labels = c("No", "Yes")) +
-   scale_y_continuous(name = "Number of Persons", 
+   scale_y_continuous(name = "Number of Persons in Household", 
                      breaks = seq(0, 15, by = 1),
                      labels = paste(prettyNum(seq(0, 15, by = 1)))) +
   annotate(geom = "text", x = 1.5, y = 7, size = 3,
@@ -294,17 +300,18 @@ ggplot(hh_data, aes(x = INTERNET, y = NP)) +
                          prettyNum(abs(difference2$conf.int[1]), 
                                    digits = 0),
                          sep = "")) +
-  annotate(geom = "text", x = 1, y = difference2$estimate[1], size = 3,
+  annotate(geom = "text", x = 1, y = 0, size = 3,
            label = paste("Mean (95% confidence):\n",
                          prettyNum(difference2$estimate[1], digits = 0))) +
-  annotate(geom = "text", x = 2, y = difference2$estimate[2], size = 3,
+  annotate(geom = "text", x = 2, y = 0, size = 3,
            label = paste("Mean (95% confidence):\n",
                          prettyNum(difference2$estimate[2], digits = 0)))
 ```
 
 
-## Relationship Between Number of Related Children (NRC) and Internet Access (INTERNET)
-These are a continuous variable and a binary variable.
+### Relationship Between Number of Related Children (NRC) and Internet Access (INTERNET)
+These are a continuous variable and a binary variable. There is a statistically signficant relationship between them.
+
 
 ```{r NRC and INTERNET}
 difference3 = t.test(NRC ~ INTERNET == "Yes",
@@ -317,7 +324,7 @@ difference3
 ggplot(hh_data, aes(x = INTERNET, y = NP)) +
   geom_violin() +
   theme_bw() +
-  scale_x_discrete(name = "Internet Access",
+  scale_x_discrete(name = "Does the household have Internet Access?",
                    labels = c("No", "Yes")) +
    scale_y_continuous(name = "Number of Related Children", 
                      breaks = seq(0, 15, by = 1),
@@ -329,10 +336,10 @@ ggplot(hh_data, aes(x = INTERNET, y = NP)) +
                          prettyNum(abs(difference3$conf.int[1]), 
                                    digits = 0),
                          sep = "")) +
-  annotate(geom = "text", x = 1, y = difference3$estimate[1], size = 3,
+  annotate(geom = "text", x = 1, y = 0, size = 3,
            label = paste("Mean (95% confidence):\n",
                          prettyNum(difference3$estimate[1], digits = 0))) +
-  annotate(geom = "text", x = 2, y = difference3$estimate[2], size = 3,
+  annotate(geom = "text", x = 2, y = 0, size = 3,
            label = paste("Mean (95% confidence):\n",
                          prettyNum(difference3$estimate[2], digits = 0)))
 ```
