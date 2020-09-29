@@ -1,0 +1,26 @@
+---
+title: "Assignment-4"
+author: "Nickie Mitch"
+date: "9/24/2020"
+output: html_document
+---
+
+### Load Libraries
+```{r load libraries, message=FALSE}
+library(tidyverse)
+library(ggplot2)
+```
+
+### Load Data
+```{r load data, message=FALSE}
+hh_data <- read_csv("simple_hh_data.csv")
+```
+
+### Run Model 
+```{r model}
+model <- lm(HINCP ~ INTERNET + LANGUAGE + NRC + NP, 
+            data = hh_data)
+
+summary(model)
+```
+This model represents a weak but statistically significant relationship that allows us to predict Household Income Over the past 12 Months from internet access status, primary household language, number of related children in the household, and number of persons in the household. 
