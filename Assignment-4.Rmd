@@ -9,18 +9,46 @@ output: html_document
 ```{r load libraries, message=FALSE}
 library(tidyverse)
 library(ggplot2)
+library(DescTools)
 ```
 
 ### Load Data
 ```{r load data, message=FALSE}
-hh_data <- read_csv("simple_hh_data.csv")
+hh_data <- read_csv("simple_hh_data3.csv")
 ```
 
-### Run Model 
+### Run Model and Rough Plot 
+Instructions for running a logistic regression found on the University of Chicago "Computing for Social Sciences" course website at https://cfss.uchicago.edu/notes/logistic-regression/\
+
+Instructions for finding a Pseudo R-Squared value found at https://www.rdocumentation.org/packages/DescTools/versions/0.99.38/topics/PseudoR2 
+ 
 ```{r model}
-model <- lm(HINCP ~ INTERNET + LANGUAGE + NRC + NP, 
+model <- glm(INTERNET ~ HINCP + LANGUAGE + NRC + NP, 
             data = hh_data)
-
 summary(model)
+PseudoR2(model, c("McFadden"))
 ```
-This model represents a weak but statistically significant relationship that allows us to predict Household Income Over the past 12 Months from internet access status, primary household language, number of related children in the household, and number of persons in the household. 
+```{r, plot}
+ggplot(hh_data, aes(HINCP, INTERNET)) +
+  geom_point() +
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"),
+              se = FALSE)
+```
+
+### Interpretation 
+
+There is no singular accepted way to assess the fit of a logistic regression model, but McFadden's pseudoR-squared is commonly used. The McFadden's pseudoR-squared value for this model is 0.196, meaning  our model is meaningful but there is still a large amount of variability in internet access that it is unable to account for. 
+
+There is a significant relationship between household income (HINCP) and internet access. For every dollar increase in household income over the past 12 months, the odds that they have internet access goes 
+
+There is not a significant relationship between French speaking households compared to English speaking households and internet access. 
+
+There is not a significant relationship between Spanish speaking households compared to English speaking households and internet access. 
+
+There is not a significant relationship between households speaking some language other than Spanish or French compared to English speaking households and internet access. Compared to English speaking households, the odds that these households have internet access
+
+There is a significant relationship between number of persons in the household (NP) and internet access. For every additional person in the household, the odds that the household has internet access goes 
+
+There is a significant relationship between number of related children in the household (NRC) and internet access. For every additional related child in the household, the odds that the household has internet access goes
+
