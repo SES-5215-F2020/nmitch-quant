@@ -372,42 +372,64 @@ summary {
 <div id="load-libraries" class="section level3">
 <h3>Load Libraries</h3>
 <pre class="r"><code>library(tidyverse)
-library(ggplot2)</code></pre>
+library(ggplot2)
+library(DescTools)</code></pre>
 </div>
 <div id="load-data" class="section level3">
 <h3>Load Data</h3>
-<pre class="r"><code>hh_data &lt;- read_csv(&quot;simple_hh_data.csv&quot;)</code></pre>
+<pre class="r"><code>hh_data &lt;- read_csv(&quot;simple_hh_data3.csv&quot;)</code></pre>
 </div>
 <div id="run-model" class="section level3">
 <h3>Run Model</h3>
-<pre class="r"><code>model &lt;- lm(HINCP ~ INTERNET + LANGUAGE + NRC + NP, 
-            data = hh_data)
-
+<p>Instructions for running a logistic regression found on the University of Chicago “Computing for Social Sciences” course website at <a href="https://cfss.uchicago.edu/notes/logistic-regression/" class="uri">https://cfss.uchicago.edu/notes/logistic-regression/</a></p>
+<p>Instructions for finding a Pseudo R-Squared value found at <a href="https://www.rdocumentation.org/packages/DescTools/versions/0.99.38/topics/PseudoR2" class="uri">https://www.rdocumentation.org/packages/DescTools/versions/0.99.38/topics/PseudoR2</a></p>
+<pre class="r"><code>model &lt;- glm(INTERNET ~ HINCP + LANGUAGE + NRC + NP, 
+            data = hh_data, family = &quot;binomial&quot;)
 summary(model)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = HINCP ~ INTERNET + LANGUAGE + NRC + NP, data = hh_data)
+## glm(formula = INTERNET ~ HINCP + LANGUAGE + NRC + NP, family = &quot;binomial&quot;, 
+##     data = hh_data)
 ## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -152573  -40285  -14713   18569  602719 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -4.2788   0.1739   0.3125   0.4677   1.1792  
 ## 
 ## Coefficients:
-##                             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                   3090.2     2437.4   1.268   0.2049    
-## INTERNETYes                  32348.6     2236.3  14.465  &lt; 2e-16 ***
-## LANGUAGEFrench               -4915.5     3104.1  -1.584   0.1133    
-## LANGUAGESome other language  28365.0     3623.1   7.829 5.32e-15 ***
-## LANGUAGESpanish              10041.7     5113.3   1.964   0.0496 *  
-## NRC                         -17546.3      942.7 -18.613  &lt; 2e-16 ***
-## NP                           21623.2      741.1  29.176  &lt; 2e-16 ***
+##                               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                  9.179e-02  9.677e-02   0.949  0.34286    
+## HINCP                        1.653e-05  1.103e-06  14.989  &lt; 2e-16 ***
+## LANGUAGEFrench              -2.778e-01  1.491e-01  -1.863  0.06242 .  
+## LANGUAGESome other language -7.139e-01  1.811e-01  -3.941 8.11e-05 ***
+## LANGUAGESpanish             -3.893e-01  3.034e-01  -1.283  0.19933    
+## NRC                         -2.241e-01  7.334e-02  -3.056  0.00225 ** 
+## NP                           6.031e-01  5.699e-02  10.583  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 68610 on 12499 degrees of freedom
-## Multiple R-squared:  0.1078, Adjusted R-squared:  0.1074 
-## F-statistic: 251.8 on 6 and 12499 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>This model represents a weak but statistically significant relationship that allows us to predict Household Income Over the past 12 Months from internet access status, primary household language, number of related children in the household, and number of persons in the household.</p>
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 7316.5  on 12505  degrees of freedom
+## Residual deviance: 6340.8  on 12499  degrees of freedom
+## AIC: 6354.8
+## 
+## Number of Fisher Scoring iterations: 7</code></pre>
+<pre class="r"><code>PseudoR2(model, c(&quot;McFadden&quot;))</code></pre>
+<pre><code>##  McFadden 
+## 0.1333553</code></pre>
+<pre class="r"><code>AIC(model)</code></pre>
+<pre><code>## [1] 6354.799</code></pre>
+</div>
+<div id="interpretation" class="section level3">
+<h3>Interpretation</h3>
+<p>There is no singular accepted way to assess the fit of a logistic regression model, and those that exist do not produce outputs that can be interpreted in plain language in the same way as R-squared. However, having these values will be useful for comparing models in assignment 5. I use McFadden’s pseudoR-squared and Akaike Information Criterion (AIC). The McFadden’s pseudoR-squared value for this model is 0.196. The AIC for this model is 6354.799.</p>
+<p>The coefficients produced by this model are log odds, meaning interpreting the magnitude is not intuitive. Nonetheless, they offer useful insight on the significance and direction of relationship between our dependent and independent variables.</p>
+<p>There is a significant relationship between household income (HINCP) and internet access. For every dollar increase in household income over the past 12 months, the odds that they households has internet access increase. Higher income households are more likely to have internet access.</p>
+<p>There is not a significant relationship between French speaking households compared to English speaking households and internet access.</p>
+<p>There is not a significant relationship between Spanish speaking households compared to English speaking households and internet access.</p>
+<p>There is a significant relationship between households speaking some language other than Spanish or French compared to English speaking households and internet access. Compared to English speaking households, the odds that these households have internet access are lower. Households speaking “some other language” are less likely to have internet access.</p>
+<p>There is a significant relationship between number of persons in the household (NP) and internet access. For every additional person in the household, the odds that the household has internet access increase. Larger households are more likely to have internet access.</p>
+<p>There is a significant relationship between number of related children in the household (NRC) and internet access. For every additional related child in the household, the odds that the household has internet access decrease. Households with more related children are less likely to have internet access.</p>
 </div>
 
 
