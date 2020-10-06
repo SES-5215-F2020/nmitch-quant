@@ -1,0 +1,72 @@
+---
+title: "Assignment 5"
+author: "Nickie Mitch"
+date: "10/5/2020"
+output: html_document
+---
+### Load Libraries
+```{r load libraries, message=FALSE}
+library(tidyverse)
+library(jtools)
+library(DescTools)
+library(interactions)
+library(knitr)
+```
+
+### Load Data
+```{r load data, message=FALSE}
+hh_data <- read_csv("simple_hh_data3.csv")
+```
+
+### Initial Regression Model (Log Regression from Assignment 4)
+
+```{r model}
+model <- glm(INTERNET ~ HINCP + LANGUAGE + NRC + NP, 
+            data = hh_data, family = "binomial")
+summary(model)
+PseudoR2(model, c("McFadden"))
+AIC(model)
+```
+
+### Regression Model with Log Transform
+
+```{r model 2}
+model2 <- glm(INTERNET ~ log(HINCP) + LANGUAGE + NRC + NP, 
+            data = hh_data, family = "binomial")
+summary(model2)
+PseudoR2(model2, c("McFadden"))
+AIC(model2)
+```
+
+### Regression Model with Interaction Terms
+
+```{r model 3}
+model3 <- glm(INTERNET ~ HINCP + LANGUAGE + NRC + NP + LANGUAGE:HINCP + NP:NRC + HINCP:NRC + HINCP:NP + LANGUAGE:NP + LANGUAGE: NRC, 
+            data = hh_data, family = "binomial")
+summary(model3)
+PseudoR2(model3, c("McFadden"))
+AIC(model3)
+```
+### Comparison Plot of Models
+```{r}
+McFaddenPR2 <- tibble(model = c(1, 2),
+                   R_square = c(summary(model)$PseudoR2,
+                                summary(model3)$PseudoR2))
+AIC <- tibble(model = c(1, 2),
+                   R_square = c(summary(model)$AIC,
+                                summary(model3)$AIC))
+
+ggplot(ModelFit, aes(x = model, y = R_square)) +
+  geom_line() +
+  scale_x_continuous(name = "",
+                   breaks = breaks <- seq(1, 4, by = 1),
+                   labels = paste("Model", breaks)) +
+  scale_y_continuous(name = "Fit") +
+  theme_bw()
+
+
+```
+
+
+### Interpretation 
+
