@@ -14,57 +14,174 @@ library(knitr)
 ```
 
 ### Load Data
+ My sample is made up of all households in Maine who had incomes over the past 12 months.
 ```{r load data, message=FALSE}
-hh_data <- read_csv("simple_hh_data3.csv")
+hh_data <- read_csv("simple_hh_data3.csv") %>%
+  mutate(n_Adults=NP-NRC) %>%
+  filter(HINCP>0)
 ```
 
-### Initial Regression Model (Log Regression from Assignment 4)
 
+### Initial Regression Model (Logistic Regression from Assignment 4)
 ```{r model}
-model <- glm(INTERNET ~ HINCP + LANGUAGE + NRC + NP, 
+model <- glm(INTERNET ~ HINCP + LANGUAGE + NRC + n_Adults, 
             data = hh_data, family = "binomial")
 summary(model)
-PseudoR2(model, c("McFadden"))
-AIC(model)
+PR_sq_1 <- PseudoR2(model, c("Nagelkerke")) 
+#I use Nagelkerke's Pseudo R2 because it is displayed in the export_summs() output later.
+AIC_1 <- AIC(model)
+
+PR_sq_1
+AIC_1
 ```
 
-### Regression Model with Log Transform
-
+### Regression Model with Log-Transform
+As in the tutorial, I log-transformed income because percentage changes are more relevant than absolute changes.
 ```{r model 2}
-model2 <- glm(INTERNET ~ log(HINCP) + LANGUAGE + NRC + NP, 
+model2 <- glm(INTERNET ~ log(HINCP) + LANGUAGE + NRC + n_Adults, 
             data = hh_data, family = "binomial")
 summary(model2)
-PseudoR2(model2, c("McFadden"))
-AIC(model2)
+PR_sq_2 <- PseudoR2(model2, c("Nagelkerke"))
+AIC_2 <- AIC(model2)
+
+PR_sq_2
+AIC_2
 ```
 
 ### Regression Model with Interaction Terms
+I expected that primary household language may impact household income, that number of adults may impact number of related children, and that number of adults may impact houshold income. I added these interactions to my model. 
 
 ```{r model 3}
-model3 <- glm(INTERNET ~ HINCP + LANGUAGE + NRC + NP + LANGUAGE:HINCP + NP:NRC + HINCP:NRC + HINCP:NP + LANGUAGE:NP + LANGUAGE: NRC, 
+model3 <- glm(INTERNET ~ HINCP + LANGUAGE + NRC + n_Adults + LANGUAGE:HINCP + n_Adults:NRC + HINCP:n_Adults, 
             data = hh_data, family = "binomial")
 summary(model3)
-PseudoR2(model3, c("McFadden"))
-AIC(model3)
+PR_sq_3 <- PseudoR2(model3, c("Nagelkerke"))
+AIC_3 <- AIC(model3)
+
+PR_sq_3
+AIC_3
 ```
 ### Comparison Plot of Models
-```{r}
-McFaddenPR2 <- tibble(model = c(1, 2),
-                   R_square = c(summary(model)$PseudoR2,
-                                summary(model3)$PseudoR2))
-AIC <- tibble(model = c(1, 2),
-                   R_square = c(summary(model)$AIC,
-                                summary(model3)$AIC))
+A higher Nagelkerke's PseudoR2 value indicates better model fit. According to Nagelkerke's PseudoR2, Model 3 is the best fit. 
 
-ggplot(ModelFit, aes(x = model, y = R_square)) +
+```{r - pseudor2}
+Nagelkerke_PseudoR2 <- tibble(model = c(1, 2, 3),
+                   Pseudo_R_square = c(PR_sq_1, PR_sq_2, PR_sq_3))
+ggplot(Nagelkerke_PseudoR2, aes(x = model, y = Pseudo_R_square)) +
   geom_line() +
   scale_x_continuous(name = "",
                    breaks = breaks <- seq(1, 4, by = 1),
                    labels = paste("Model", breaks)) +
-  scale_y_continuous(name = "Fit") +
+  scale_y_continuous(name = "Nagelkerke's PseudoR2") +
+  theme_bw()
+```
+
+A lower Akaike information criterion (AIC) value indicates better model fit. According to AIC, Model 3 is the best fit.
+```{r - AIC}
+AIC <- tibble(model = c(1, 2, 3),
+                   AIC = c(AIC_1, AIC_2, AIC_3))
+ggplot(AIC, aes(x = model, y = AIC)) +
+  geom_line() +
+  scale_x_continuous(name = "",
+                   breaks = breaks <- seq(1, 4, by = 1),
+                   labels = paste("Model", breaks)) +
+  scale_y_continuous(name = "AIC") +
   theme_bw()
 
+```
 
+### Exporting Regression Results 
+```{r export}
+coeff_names <- c("Annual Income" = "HINCP",
+                "French\n(compared to English)" = "LANGUAGEFrench",
+                "Spanish\n(compared to English)" = "LANGUAGESpanish",
+                "Some other language\n(compared to English)" = "LANGUAGESome other language",
+                "Number of Related Children" = "NRC",
+                "Number of Adults" = "n_Adults",
+                "Interaction:\nspeaking french and income" = 
+                    "HINCP:LANGUAGEFrench",
+                "Interaction:\nspeaking spanish and income" = 
+                    "HINCP:LANGUAGESome other language",
+                "Interaction:\nspeaking some other language and income" = 
+                    "HINCP:LANGUAGEFrench",
+                 "Interaction:\nnumber of related children and number of adults" = 
+                    "NRC:n_Adults",
+                 "Interaction:\nnumber of adults and income" = 
+                    "HINCP:n_Adults")
+
+
+export_summs(model, model3, 
+             error_format = "(p = {p.value})",
+             error_pos = "same",
+             model.names = c("Initial model", "Preferred model"),
+             coefs = coeff_names)
+```
+
+
+### Visualizing Regression Results
+```{r 95ci plot}
+coeff_desc <- c("Interaction:\nspeaking french and income" = 
+                    "HINCP:LANGUAGEFrench",
+                "Interaction:\nspeaking spanish and income" = 
+                    "HINCP:LANGUAGESome other language",
+                "Interaction:\nspeaking some other language and income" = 
+                    "HINCP:LANGUAGEFrench",
+                 "Interaction:\nnumber of related children and number of persons" = 
+                    "NRC:n_Adults",
+                 "Interaction:\nnumber of persons and income" = 
+                    "HINCP:n_Adults",
+                "Annual Income" = "HINCP",
+                "French\n(compared to English)" = "LANGUAGEFrench",
+                "Spanish\n(compared to English)" = "LANGUAGESpanish",
+                "Some other language\n(compared to English)" = "LANGUAGESome other language",
+                "Number of Related Children" = "NRC",
+                "Number of Adults" = "n_Adults")
+
+
+plot_coefs(model3, 
+           coefs = coeff_desc,
+           plot.distributions = TRUE,
+           rescale.distributions = TRUE) +
+  scale_x_continuous(name = "Effect on Probability of Having Internet Access")
+```
+
+```{r interaction plot 1}
+interact_plot(model3, pred = HINCP, modx = LANGUAGE, interval = TRUE) +
+  scale_x_continuous(name = "Annual income (thousands)",
+                     limits = c(0, 500000),
+                     breaks = breaks <- seq(0, 500000, by = 50000),
+                     labels = paste("$", 
+                                    prettyNum(breaks/1000, big.mark = "'"),
+                                    sep = "")) +
+  scale_y_continuous(name = "Probability of Having Internet Access",
+                     breaks = seq(0, 1, by = 0.1)) +
+  scale_color_discrete(name = "") +
+  scale_linetype_discrete(name = "") +
+  scale_fill_discrete(name = "") 
+```
+
+```{r interaction plot 2}
+interact_plot(model3, pred = HINCP, modx = n_Adults, legend.main = "Number of Adults", interval = TRUE) +
+scale_x_continuous(name = "Annual income (thousands)",
+                     limits = c(0, 500000),
+                     breaks = breaks <- seq(0, 500000, by = 50000),
+                     labels = paste("$", 
+                                    prettyNum(breaks/1000, big.mark = "'"),
+                                    sep = "")) +
+  scale_y_continuous(name = "Probability of Having Internet Access",
+                     breaks = seq(0, 1, by = 0.05))
+
+```
+
+```{r interaction plot 3}
+interact_plot(model3, pred = NRC, modx = n_Adults, legend.main = "Number of Adults", interval = TRUE) +
+scale_x_continuous(name = "Number of Related Children",
+                     limits = c(0, 11),
+                     breaks = breaks <- seq(0, 11, by = 1),
+                     labels = paste(prettyNum(breaks, big.mark = "'"),
+                                    sep = "")) +
+  scale_y_continuous(name = "Probability of Having Internet Access",
+                     breaks = seq(0, 1, by = 0.01))
 ```
 
 
