@@ -111,7 +111,7 @@ coeff_names <- c("Annual Income" = "HINCP",
 
 
 export_summs(model, model3, 
-             error_format = "(p = {p.value})",
+             error_format = "(Standard Error = {std.error})",
              error_pos = "same",
              model.names = c("Initial model", "Preferred model"),
              coefs = coeff_names)
@@ -184,6 +184,4 @@ scale_x_continuous(name = "Number of Related Children",
                      breaks = seq(0, 1, by = 0.01))
 ```
 
-
-### Interpretation 
 
